@@ -1,13 +1,263 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Hello World!</title>
-<link rel="stylesheet" href="bluestyle.css">
-</head>
-<body>
+<textarea name="anything" id="textareaId" cols="30" rows="10"></textarea><br>
+<input id="clId" type="text"> <button id="btnId" type="button">Insert</button>
 
-<h1>Hello world!</h1>
-<p>This is the first file in my new Git Repo.</p>
+<script>
+/* Create new html element inside text box where cursor is also run some awesome useful command tools */
+class Cmd {
+    constructor(inputText,textareaObj){
+        this.text = inputText;
+        this.textObj = textareaObj;
+    }
+/* convert htmlentities to html */ 
+    getHtml(str) {
+        var str1 = str.replaceAll("&lt;", "<");
+        var str2 = str1.replaceAll("&gt;", ">");
+        var str3 = str2.replaceAll('&quot;', '"');
+        return str3;
+    }
+/* convert html to htmlentities */ 
+    htmlEntities(str) {
+        var str1 = str.replaceAll('<', '&lt;');
+        var str2 = str1.replaceAll('>', '&gt;');
+        var str3 = str2.replaceAll('"', '&quot;');
+        return str3;
+    }
+// return splitted cmd text if true; else return false
+    is_cmd(){
+        if (this.text.split("~")[0] == "cmd"){
+        return this.text.split("~")[1];
+        }
+        else{
+            return false;
+        }
+    }
 
-</body>
-</html>
+    insertWhereCursorIs(textAreaObj,text) {
+        // will give the current position of the cursor
+        let textArea = textAreaObj;
+        let curPos = textArea.selectionStart;
+        // will get the value of the text area
+        let x = textArea.value;
+        let text_to_insert = text;
+        // setting the updated value in the text area
+        textArea.value = x.slice(0,curPos)+text_to_insert+x.slice(curPos);
+    }
+
+    /* draft element method protected */ 
+    draftElement(text){
+    /* if text is empty */ 
+    if(text === ""){
+        return "";
+    }
+    /* if text is not empty */ 
+    else{
+        let myEl = new Array();
+        let newElem = "";
+        let cls = "";
+        let id = "";
+        let elm = "";
+        if (text.split(".")[1]) {
+            cls = ' class="'+text.split(".")[1]+'"';
+            myEl = text.split(".");
+            elm = myEl[0];
+            if (text.split(".")[0]==="") {
+                    elm = "div";
+                }
+            //console.log(elm);
+        }
+        else if (text.split("#")[1]) {
+            id = ' id="'+text.split("#")[1]+'"';
+            myEl = text.split("#");
+            elm = myEl[0];
+            if (text.split("#")[0]==="") {
+                    elm = "div";
+                }
+            // console.log(elm);
+        }
+        else{
+            elm = text;
+            //console.log(elm);
+        }
+        // console.log(elm);
+    
+
+    if(elm!=""){  
+        //console.log(elm);     
+        if (elm.split(":")[1]) {
+            /* if it has : chars */
+                var el = elm.split(":");
+                var el0 = el[0];
+                var el1 = el[1];
+            }
+            else {
+                var el0 = elm;
+                var el1 = "";
+            }
+                switch (el0) {
+                    case "input":
+                    newElem = '<'+el0+' type="'+el1+'" name=""' +cls+id+'>';
+                    break;
+
+                    case "img":
+                    newElem = '<'+el0+' src="'+el1+'" name=""' +cls+id+'>';
+                    break;
+
+                    case "button":
+                    newElem = '<'+el0+' type="'+el1+'" name=""' +cls+id+'></'+el0+'>';
+                    break;
+
+                    case "script":
+                    newElem = '<'+el0+' src="'+el1+'" name=""' +cls+id+'></'+el0+'>';
+                    break;
+
+                    case "iframe":
+                    newElem = '<'+el0+' src="'+el1+'" name=""' +cls+id+'></'+el0+'>';
+                    break;
+
+                    case "form":
+                    newElem = '<'+el0+' method="'+el1+'" action=""' +cls+id+'></'+el0+'>';
+                    break;
+
+                    case "a":
+                    newElem = '<'+el0+' href="'+el1+'" name=""' +cls+id+'></'+el0+'>';
+                    break;
+
+                    case "table":
+                    newElem = '<'+el0+''+cls+id+'>\n <tbody>\n     <tr>\n         <th></th>\n     </tr>\n     <tr>\n         <td> </td>\n     </tr>\n </tbody>\n</'+el0+'>';
+                    break;
+
+                    case "hr":
+                    newElem = '<hr>';
+                    break;
+                    
+                    case "br":
+                    newElem = '<br>';
+                    break;
+
+                    case " ":
+                    newElem = '&nbsp;';
+                    break;
+
+                    case "//html":
+                    newElem = '<!-- comment.. -->';
+                    break;
+
+                    case "//js":
+                    newElem = '/* comment... */';
+                    break;
+
+                    default:
+                    newElem = '<'+el0+''+cls+id+'></'+el0+'>';
+                    break;
+                }
+                return newElem;
+            }
+        }
+    }
+
+/* multiply any text here it is depend on draft element */
+multiply() {
+        let text = this.text;
+        let newElems = "";
+         if (text.split("*")[1]) {
+             let myar = text.split("*")
+            for (let index = 0; index < myar[1]; index++) {
+                newElems += (this.draftElement(myar[0]))+"\n";
+            }
+        }
+        else{
+            newElems = this.draftElement(text);
+            }
+        return newElems;
+    }
+
+//independent and final method
+runCmd(){
+        let text = this.text;
+        //cmd text goes here
+        if (text.split("~")[0]==="cmd"){
+            text = text.split("~")[1];
+            var cmdAction = text.split("^");
+            //console.log(cmdAction[0])
+            var cmdtext = cmdAction[1];
+            //console.log(cmdAction[0])
+            var textAreaObj = this.textObj;
+        switch (cmdAction[0]) {
+            case "htmlent":
+                var x = this.textObj.value;
+                var textArea = this.textObj;
+                var curPos = textArea.selectionStart;
+                //console.log(this.htmlEntities(cmdAction[1]))
+                this.textObj.value = x.slice(0,curPos)+(this.htmlEntities(cmdAction[1]))+x.slice(curPos);
+                break;
+            case "html":
+                var x = this.textObj.value;
+                var textArea = this.textObj;
+                var curPos = textArea.selectionStart;
+                this.textObj.value = x.slice(0,curPos)+this.getHtml(cmdAction[1])+x.slice(curPos);
+                break;
+            case "post":
+                if(cmdAction[1]==="save"){
+                alert("You can set a command to submit a form");
+                }
+                else{
+
+                }
+                break;
+            case "replace":
+                var textBank = this.textObj.value;
+                //console.log(textBank);
+                var oldWord = cmdAction[1]; //.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                //console.log(oldWord);
+                var newWord = cmdAction[2]; //.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                //console.log(newWord);
+                this.textObj.value = textBank.replaceAll(oldWord, newWord);
+                //alert('executed');
+                break;
+            case "lnbr":
+                var textBank = this.textObj.value;
+                var oldWord = cmdAction[1];//.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+                var newWord = (cmdAction[1])+"\n";
+                ;
+                this.textObj.value = textBank.replaceAll(oldWord, newWord);
+                //alert('executed');
+                break;
+            case "goto":
+                window.location.assign(cmdAction[1]);
+                break;
+            default:
+                alert("False command");
+                break;
+            }
+
+        }
+        else{
+            this.insertWhereCursorIs(this.textObj,this.multiply());
+        }
+    }
+
+
+}
+
+
+var btnObj = document.getElementById("btnId");
+var clObj = document.getElementById("clId");
+var textareaObj = document.getElementById("textareaId");
+
+clObj.addEventListener("keydown", insertWhenEnter);
+function insertWhenEnter(event) {
+    if(event.key == "Enter"){
+        var cmd = new Cmd(clObj.value, textareaObj);
+        cmd.runCmd();
+        clObj.value = "";
+    }
+}
+btnObj.addEventListener("click", insert);
+function insert() {
+    var cmd = new Cmd(clObj.value, textareaObj);
+    cmd.runCmd();
+    clObj.value = "";    
+}
+
+
+</script>
